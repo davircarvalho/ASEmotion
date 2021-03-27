@@ -14,14 +14,16 @@ import pickle
 import librosa
 
 
+
+
+# %% Define the dataset
+path = "D:/Documentos/1 - Work/AEmotion/dataset/emotion_portuguese_database"
+
+
 # %% Resample
 def load_wav(filename):
      wav, fs = librosa.load(filename, sr = 16000)
      return wav, fs
-
-
-# %% Load files 
-path = "D:/Documentos/1 - Work/AEmotion/dataset/emotion_portuguese_database"
 
 # Initialize opensmile feature set
 smile = opensmile.Smile(feature_set=opensmile.FeatureSet.eGeMAPSv02,
