@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Mar 16 11:14:39 2021
-
-@author: rdavi
-"""
-
-# -*- coding: utf-8 -*-
-"""
 Created on Tue Jan 26 13:26:40 2021
 
 @author: rdavi
