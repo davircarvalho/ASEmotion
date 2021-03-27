@@ -14,13 +14,16 @@ import pickle
 import librosa
 
 
-
-
 # %% Define the dataset
-path = "D:/Documentos/1 - Work/AEmotion/dataset/emotion_portuguese_database"
+# dataset = 'DEMOS'
+# dataset = 'RAVDESS'
+dataset = 'TESS'
+# dataset = 'RAVDESS_TESS'
+
+path = '../../data/raw/' +dataset+ '_Emotions/'
 
 
-# %% Resample
+# %% Extract features
 def load_wav(filename):
      wav, fs = librosa.load(filename, sr = 16000)
      return wav, fs
@@ -69,7 +72,6 @@ for subdir, dirs, files in os.walk(path):
 # %% Save smile dataset
 X, y = zip(*lst)
 X, y = np.asarray(X), np.asarray(y)
-with open('Network/dataset_smile_ptbr_16khz.pckl', 'wb') as f:
+with open('../../data/processed/dataset_smile_' +dataset+ '.pckl', 'wb') as f:
     pickle.dump([X, y], f)
 print("All done!")
-# %%
