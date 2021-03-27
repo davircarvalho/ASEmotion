@@ -7,3 +7,9 @@ Audio speech emotion recognition using Temporal Convolutional Networks (TCNs)
 - model: Folder for storing binary (json or other format) file for local use.
 - data: Folder for storing subset data for experiments. It includes both raw data and processed data for temporary use.
 - notebook: Storing all notebooks includeing EDA and modeling stage.
+
+
+## Training 
+The pipeline begins with getting the datasets, have a look at the <src/preparation'> folder, after that preprocessing the datasets with Preprocess_datasets.py at <src/procesing>, finally the trainning function (smile_Train.py) can be found at <src/modeling>.
+
+*All functions were developed with vscode's interactive python, which is basically a jupyter notebook, but in a .py file. If you want to run them in the terminal, you'll need to add* if __name__ == "__main__": *manually.*
