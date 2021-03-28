@@ -9,7 +9,7 @@ Created on Mon Mar  1 16:48:20 2021
 import sys 
 sys.path.append('..')
 
-from tcn.tcn import TCN, compiled_tcn
+from src.modeling.tcn.tcn import TCN, compiled_tcn
 
 import pickle
 import numpy as np
@@ -24,8 +24,8 @@ from tensorflow.keras.callbacks import EarlyStopping
 
 # %% Define the dataset
 # dataset = 'DEMOS'
-# dataset = 'RAVDESS'
-dataset = 'TESS'
+dataset = 'RAVDESS'
+# dataset = 'TESS'
 # dataset = 'RAVDESS_TESS'
 
 
@@ -38,7 +38,7 @@ with open('../../data/processed/dataset_smile_' +dataset+ '.pckl', 'rb') as f:
 # %% Filter inputs and targets
 # Split between train and test 
 x_train, x_test, y_train, y_test = train_test_split(X,y,
-                                                    test_size=0.2,
+                                                    test_size=0.20,
                                                     shuffle=True,
                                                     random_state=42,
                                                     stratify=y)
@@ -77,11 +77,11 @@ model.summary()
 
 
 # %% Train
-early_stop = EarlyStopping(monitor="val_accuracy", patience=4)
+early_stop = EarlyStopping(monitor="val_accuracy", patience=100)
 cnnhistory = model.fit(x_train, y_train,
                         batch_size = 38,
                         validation_data=(x_test, y_test),
-                        epochs = 70,
+                        epochs = 700,
                         verbose = 1,
                         callbacks=early_stop)
 

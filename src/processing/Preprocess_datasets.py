@@ -12,29 +12,35 @@ import numpy as np
 import opensmile
 import pickle
 import librosa
+import matplotlib.pyplot as plt
 
 
 # %% Define the dataset
-dataset = 'DEMOS'
-# dataset = 'RAVDESS'
+# dataset = 'DEMOS'
+dataset = 'RAVDESS'
 # dataset = 'TESS'
-# dataset = 'RAVDESS_TESS'
 
 path = '../../data/raw/' +dataset+ '_Emotions/'
 
 
 # %% Extract features
 def load_wav(filename):
-     wav, fs = librosa.load(filename, sr = 16000)
-     return wav, fs
+    # Load and resample
+    audio, fs = librosa.load(filename, sr = 16000)
+    # Silence trim 
+    interv = librosa.effects.split(audio, top_db=20, frame_length=4096, hop_length=1)
+    start, end = interv[0] 
+    audio_out = audio[start : end]
+    return audio_out, fs
 
 # Initialize opensmile feature set
 smile = opensmile.Smile(feature_set=opensmile.FeatureSet.eGeMAPSv02,
-            feature_level=opensmile.FeatureLevel.LowLevelDescriptors)   
+            feature_level=opensmile.FeatureLevel.LowLevelDescriptors) 
+
+# Sweep  
 lst = []
 i = -2
 duration = 3 # define signal duration in each chunk 
-
 for subdir, dirs, files in os.walk(path):
     i+=1
     print(subdir)
@@ -42,31 +48,21 @@ for subdir, dirs, files in os.walk(path):
     for file in files:
         # Load file
         filename = os.path.join(subdir,file)
-        data, Fs = load_wav(filename)
+        data, Fs = load_wav(filename)    
 
-        # Make chunks 
+        # # Make chunks 
         N = int(np.floor(duration*Fs))  # Number of samples in two second
-        k_chunks = int(np.floor(np.size(data)/N)) # Number of chunks available in one audio
         data_chunk = np.empty(shape=(N))
-        if k_chunks >= 1:
-            for k in range(0, k_chunks):
-                data_chunk = data[k*N : k*N+N]
-            
-                # Opensmile
-                X_smile = smile.process_signal(data_chunk, Fs)
+        if np.size(data) > N:
+            data = data[:N]
+        data_chunk[:np.size(data)] = data
         
-                # Append to list 
-                arr = X_smile.values, i
-                lst.append(arr)
-        else: # zero pad at the end if audio is less than specified duration 
-            data_chunk[:np.size(data)] = data
-            
-            # Opensmile
-            X_smile = smile.process_signal(data_chunk, Fs)
-    
-            # Append to list 
-            arr = X_smile.values, i
-            lst.append(arr)
+        # Opensmile
+        X_smile = smile.process_signal(data_chunk, Fs)
+
+        # Append to list 
+        arr = X_smile.values, i
+        lst.append(arr)
 
 
 # %% Save smile dataset
