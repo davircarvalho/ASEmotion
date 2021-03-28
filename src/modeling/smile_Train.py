@@ -17,9 +17,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import confusion_matrix
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from tensorflow.keras.models import model_from_json
-# import seaborn as sb
+import seaborn as sb
 from tensorflow.keras.callbacks import EarlyStopping
 
 # %% Define the dataset
@@ -93,35 +93,35 @@ model_as_json = model.to_json()
 with open('../../model/model_smile_' +dataset+ '.json', 'w') as json_file:
     json_file.write(model_as_json)
     # save weights to file (for this format, need h5py installed)
-    model.save_weights('../Network/weights_smile_' +dataset+ '.h5')
+    model.save_weights('../../model/weights_smile_' +dataset+ '.h5')
 
 
 
 
 
 # %% Plot accuracy n loss
-# h = plt.figure()
-# plt.plot(cnnhistory.history['loss'])
-# plt.plot(cnnhistory.history['val_loss'])
-# plt.title('Loss')
-# plt.ylabel('loss')
-# plt.xlabel('epoch')
-# plt.legend(['Train', 'Test'], loc='upper right')
-# plt.grid()
-# plt.show()
-# h.savefig('../../data/Loss' +dataset+ '.pdf', bbox_inches='tight')
+h = plt.figure()
+plt.plot(cnnhistory.history['loss'])
+plt.plot(cnnhistory.history['val_loss'])
+plt.title('Loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['Train', 'Test'], loc='upper right')
+plt.grid()
+plt.show()
+h.savefig('../../data/Loss' +dataset+ '.pdf', bbox_inches='tight')
 
 
-# h = plt.figure()
-# plt.plot(cnnhistory.history['accuracy'])
-# plt.plot(cnnhistory.history['val_accuracy'])
-# plt.title('Accuracy')
-# plt.ylabel('accuracy')
-# plt.xlabel('epoch')
-# plt.legend(['Train', 'Test'], loc='lower right')
-# plt.grid()
-# plt.show()
-# h.savefig('../../data/Accuracy' +dataset+ '.pdf', bbox_inches='tight')
+h = plt.figure()
+plt.plot(cnnhistory.history['accuracy'])
+plt.plot(cnnhistory.history['val_accuracy'])
+plt.title('Accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['Train', 'Test'], loc='lower right')
+plt.grid()
+plt.show()
+h.savefig('../../data/Accuracy' +dataset+ '.pdf', bbox_inches='tight')
 
 
 
@@ -137,17 +137,18 @@ with open('../../model/model_smile_' +dataset+ '.json', 'w') as json_file:
 
 
 # %% Confusion Matrix
-# lb = LabelEncoder()
-# pred = model.predict(x_test, verbose=1)
-# pred = pred.squeeze().argmax(axis=1)
-# new_y_test = y_test.astype(int)
+lb = LabelEncoder()
+pred = model.predict(x_test, verbose=1)
+pred = pred.squeeze().argmax(axis=1)
+new_y_test = y_test.astype(int)
 
-# mtx = confusion_matrix(new_y_test, pred)
-# labels = ['Guilt', 'Disgust', 'Happy', 'Fear', 'Anger', 'Surprise', 'Sad']
-# h = plt.figure()
-# sb.heatmap(mtx, annot = True, fmt ='d',
-#            yticklabels=labels,
-#            xticklabels=labels,
-#            cbar=False)
-# plt.title('Confusion matrix')
-# h.savefig('../../data/Confusion' +dataset+ '.pdf', bbox_inches='tight')
+mtx = confusion_matrix(new_y_test, pred)
+labels = ['Neutral', 'Happy', 'Sad', 'Anger', 'Fear', 'Disgust', 'Surprise']
+h = plt.figure()
+sb.heatmap(mtx, annot = True, fmt ='d',
+           yticklabels=labels,
+           xticklabels=labels,
+           cbar=False)
+plt.title('Confusion matrix')
+h.savefig('../../data/Confusion' +dataset+ '.pdf', bbox_inches='tight')
+# %%
