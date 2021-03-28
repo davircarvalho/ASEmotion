@@ -15,9 +15,9 @@ import librosa
 
 
 # %% Define the dataset
-# dataset = 'DEMOS'
+dataset = 'DEMOS'
 # dataset = 'RAVDESS'
-dataset = 'TESS'
+# dataset = 'TESS'
 # dataset = 'RAVDESS_TESS'
 
 path = '../../data/raw/' +dataset+ '_Emotions/'
@@ -75,3 +75,4 @@ X, y = np.asarray(X), np.asarray(y)
 with open('../../data/processed/dataset_smile_' +dataset+ '.pckl', 'wb') as f:
     pickle.dump([X, y], f)
 print("All done!")
+# %%

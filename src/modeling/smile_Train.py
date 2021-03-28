@@ -9,7 +9,7 @@ Created on Mon Mar  1 16:48:20 2021
 import sys 
 sys.path.append('..')
 
-from tcn import TCN, compiled_tcn
+from tcn.tcn import TCN, compiled_tcn
 
 import pickle
 import numpy as np
@@ -22,10 +22,16 @@ from tensorflow.keras.models import model_from_json
 # import seaborn as sb
 from tensorflow.keras.callbacks import EarlyStopping
 
+# %% Define the dataset
+# dataset = 'DEMOS'
+# dataset = 'RAVDESS'
+dataset = 'TESS'
+# dataset = 'RAVDESS_TESS'
+
 
 
 # %% Load dataset 
-with open('../Network/dataset_smile_rav_tess_16khz.pckl', 'rb') as f:
+with open('../../data/processed/dataset_smile_' +dataset+ '.pckl', 'rb') as f:
     [X, y] = pickle.load(f)
     
     
@@ -72,7 +78,6 @@ model.summary()
 
 # %% Train
 early_stop = EarlyStopping(monitor="val_accuracy", patience=4)
-
 cnnhistory = model.fit(x_train, y_train,
                         batch_size = 38,
                         validation_data=(x_test, y_test),
@@ -85,10 +90,10 @@ cnnhistory = model.fit(x_train, y_train,
 # %% Save it all
 # get model as json string and save to file
 model_as_json = model.to_json()
-with open('../Network/model_smile_rav_tess_16khz.json', 'w') as json_file:
+with open('../../model/model_smile_' +dataset+ '.json', 'w') as json_file:
     json_file.write(model_as_json)
     # save weights to file (for this format, need h5py installed)
-    model.save_weights('../Network/weights_smile_rav_tess_16khz.h5')
+    model.save_weights('../Network/weights_smile_' +dataset+ '.h5')
 
 
 
@@ -104,7 +109,7 @@ with open('../Network/model_smile_rav_tess_16khz.json', 'w') as json_file:
 # plt.legend(['Train', 'Test'], loc='upper right')
 # plt.grid()
 # plt.show()
-# h.savefig("../Network/Loss.pdf", bbox_inches='tight')
+# h.savefig('../../data/Loss' +dataset+ '.pdf', bbox_inches='tight')
 
 
 # h = plt.figure()
@@ -116,22 +121,22 @@ with open('../Network/model_smile_rav_tess_16khz.json', 'w') as json_file:
 # plt.legend(['Train', 'Test'], loc='lower right')
 # plt.grid()
 # plt.show()
-# h.savefig("../Network/Accuracy.pdf", bbox_inches='tight')
+# h.savefig('../../data/Accuracy' +dataset+ '.pdf', bbox_inches='tight')
 
 
 
 
-# # %% reload saved model 
-# # load model from file
-# with open('../Network/model_smile_it.json', 'r') as json_file:
+# %% reload saved model 
+# load model from file
+# with open('../../model/model_smile_' +dataset+ '.json', 'r') as json_file:
 #     loaded_json = json_file.read()
 #     model = model_from_json(loaded_json, custom_objects={'TCN': TCN})
 #     # restore weights
-#     model.load_weights('../Network/weights_smile_it.h5')
+#     model.load_weights('../../model/weights_smile_' +dataset+ '.h5')
 
 
 
-# # %% Confusion Matrix
+# %% Confusion Matrix
 # lb = LabelEncoder()
 # pred = model.predict(x_test, verbose=1)
 # pred = pred.squeeze().argmax(axis=1)
@@ -145,4 +150,4 @@ with open('../Network/model_smile_rav_tess_16khz.json', 'w') as json_file:
 #            xticklabels=labels,
 #            cbar=False)
 # plt.title('Confusion matrix')
-# h.savefig("../Network/Confusion.pdf", bbox_inches='tight')
+# h.savefig('../../data/Confusion' +dataset+ '.pdf', bbox_inches='tight')
