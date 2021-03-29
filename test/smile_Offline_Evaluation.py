@@ -19,8 +19,8 @@ import pickle
 
 # %% Define the INPUT dataset
 # dataset = 'DEMOS'
-dataset = 'RAVDESS'
-# dataset = 'TESS'
+# dataset = 'RAVDESS'
+dataset = 'TESS'
 
 # LOAD
 with open('../data/processed/dataset_smile_' +dataset+ '.pckl', 'rb') as f:
@@ -41,8 +41,8 @@ x = x.astype('float32')
 
 # %% Load saved model 
 # Define the MODEL dataset
-# dataset = 'DEMOS'
-dataset = 'RAVDESS'
+dataset = 'DEMOS'
+# dataset = 'RAVDESS'
 # dataset = 'TESS'
 # dataset = 'RAVDESS_TESS'
 

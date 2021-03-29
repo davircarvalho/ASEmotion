@@ -23,8 +23,8 @@ import seaborn as sb
 from tensorflow.keras.callbacks import EarlyStopping
 
 # %% Define the dataset
-# dataset = 'DEMOS'
-dataset = 'RAVDESS'
+dataset = 'DEMOS'
+# dataset = 'RAVDESS'
 # dataset = 'TESS'
 # dataset = 'RAVDESS_TESS'
 
@@ -63,9 +63,9 @@ x_test = x_test.astype('float32')
 model = compiled_tcn(return_sequences=False,
                     num_feat=x_train.shape[2],
                     num_classes=len(np.unique(y_train)),
-                    nb_filters=65,
-                    kernel_size=9,
-                    dilations=[2 ** i for i in range(7)], 
+                    nb_filters=128,
+                    kernel_size=5,
+                    dilations=[2 ** i for i in range(6)], 
                     nb_stacks=1,
                     dropout_rate=0.2,
                     use_weight_norm=True,
@@ -77,11 +77,11 @@ model.summary()
 
 
 # %% Train
-early_stop = EarlyStopping(monitor="val_accuracy", patience=100)
+early_stop = EarlyStopping(monitor="val_accuracy", patience=8)
 cnnhistory = model.fit(x_train, y_train,
-                        batch_size = 38,
+                        batch_size = 32,
                         validation_data=(x_test, y_test),
-                        epochs = 700,
+                        epochs = 100,
                         verbose = 1,
                         callbacks=early_stop)
 

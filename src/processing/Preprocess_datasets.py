@@ -16,8 +16,8 @@ import matplotlib.pyplot as plt
 
 
 # %% Define the dataset
-# dataset = 'DEMOS'
-dataset = 'RAVDESS'
+dataset = 'DEMOS'
+# dataset = 'RAVDESS'
 # dataset = 'TESS'
 
 path = '../../data/raw/' +dataset+ '_Emotions/'
