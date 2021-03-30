@@ -16,9 +16,10 @@ import matplotlib.pyplot as plt
 
 
 # %% Define the dataset
-dataset = 'DEMOS'
+# dataset = 'DEMOS'
 # dataset = 'RAVDESS'
 # dataset = 'TESS'
+dataset = 'AEMOTION'
 
 path = '../../data/raw/' +dataset+ '_Emotions/'
 
@@ -56,10 +57,14 @@ for subdir, dirs, files in os.walk(path):
         if np.size(data) > N:
             data = data[:N]
         data_chunk[:np.size(data)] = data
-        
+        # plt.plot(data_chunk)
+        # plt.show()
+        # break
         # Opensmile
         X_smile = smile.process_signal(data_chunk, Fs)
-
+        plt.plot(X_smile.values)
+        plt.show()
+        break
         # Append to list 
         arr = X_smile.values, i
         lst.append(arr)

@@ -32,6 +32,8 @@ with zipfile.ZipFile(path_raw + 'wav_DEMoS.zip', 'r') as zip_ref:
 # %% Copy to desired structure
 path = '../../data/raw/DEMoS/DEMOS/'
 path_out = '../../data/raw/DEMOS_Emotions'
+os.replace('../../data/raw/DEMoS/NEU/', path_out + '/0 - Neutral/')
+
 for subdir, dirs, files in os.walk(path):
     for file in files:
         emotion = file[8:11] # if DEMoS
@@ -50,7 +52,7 @@ for subdir, dirs, files in os.walk(path):
         elif emotion == 'sor': # surprise
             path_paste = path_out + '/6 - Surprise/'
         elif emotion == 'col': # guilt
-            path_paste = path_out + '/0 - Guilt/'            
+            path_paste = path_out + '/7 - Guilt/'            
         # Criar caminho caso não exista
         if not os.path.exists(path_paste):
             os.makedirs(path_paste)

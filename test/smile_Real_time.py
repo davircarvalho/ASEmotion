@@ -10,18 +10,16 @@ import keract
 
 import sys 
 sys.path.append('..')
-from tcn import TCN
+from src.modeling.tcn.tcn import TCN
 
 from tensorflow.keras.models import model_from_json
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
-from IPython.display import clear_output
+# from IPython.display import clear_output
 from datetime import datetime as dtime
 import opensmile
 
-
 import paho.mqtt.client as mqtt #import the client1
-import time
 
 
 # %% Initialize MQTT
@@ -31,10 +29,8 @@ def on_message(client, userdata, message):
     # print("message qos=",message.qos)
     # print("message retain flag=",message.retain)
 
-
 def on_log(client, userdata, level, buf):
     print("log: ",buf)
-
 
 broker_address="146.164.26.62"
 broker_port = 2494
@@ -51,13 +47,19 @@ client.connect(broker_address, broker_port, keepalive)
 client.loop_start() #start the loop
 
 
-# %% reload saved model 
+# %% Define the trained model 
+# dataset = 'DEMOS'
+# dataset = 'RAVDESS'
+dataset = 'TESS'
+# dataset = 'RAVDESS_TESS'
+# dataset = 'AEMOTION'
+
 # load model from file
-with open('../Network/model_smile_it.json', 'r') as json_file:
+with open('../model/model_smile_' +dataset+ '.json', 'r') as json_file:
     loaded_json = json_file.read()
     model = model_from_json(loaded_json, custom_objects={'TCN': TCN})
     # restore weights
-    model.load_weights('../Network/weights_smile_it.h5')
+    model.load_weights('../model/weights_smile_' +dataset+ '.h5')
 
 
 # %% Pre-process input
@@ -67,16 +69,15 @@ smile = opensmile.Smile(
             feature_level=opensmile.FeatureLevel.LowLevelDescriptors,
 )
 
-
 def input_prep(data, smile):
     X_smile = np.empty(shape=(1, 296, 25))
-    df_x = smile.process_signal(data, 44100)
+    df_x = smile.process_signal(data, 16000)
     scaler = MinMaxScaler()
     X_smile[0,:,:] = scaler.fit_transform(df_x.values)
     return X_smile
 
 
-# %% Identificar dispositivos de audio do sistema
+# %% Identificar dispositivos de audio do sistema-------------------------
 p = pyaudio.PyAudio()
 info = p.get_host_api_info_by_index(0)
 numdevices = info.get('deviceCount')
@@ -85,8 +86,8 @@ for i in range(0, numdevices):
             print("Input Device id ", i, " - ", p.get_device_info_by_host_api_device_index(0, i).get('name'))
 
 
-#  Time streaming #############################################
-RATE = 44100 # Sample rate
+# %% Time streaming #######################################################
+RATE = 16000 # Sample rate
 nn_time = 3 # signal length send to the network
 CHUNK = round(RATE*nn_time) # Frame size
 
@@ -96,7 +97,7 @@ print('janela de análise é de: {0} segundos'.format(CHUNK/RATE))
 stream=p.open(format = pyaudio.paFloat32,
                        rate=RATE,
                        channels=1, 
-                       input_device_index = 5,
+                       input_device_index = 1,
                        input=True,  
                        frames_per_buffer=CHUNK)
 
@@ -109,20 +110,20 @@ while True:
     x_infer = input_prep(data, smile)
     pred = model.predict(x_infer)
     predi = pred.argmax(axis=1)
-    history_pred = np.append(history_pred, predi[0])
+    # history_pred = np.append(history_pred, predi[0])
     # hist_time = np.append(hist_time, dtime.now().strftime('%H:%M:%S'))
     print(labels[predi[0]] + "  --  (raw data peak: " + str(max(data))+")")
     
     # GET ACTIVATIONS
-    layername = 'activation_3' 
+    layername = 'activation' 
     l_weights = keract.get_activations(model, x_infer, layer_names=layername)
     w_values = np.squeeze(l_weights[layername])
     
     # SEND TO MQTT BrOKER
-    client.publish('hiper/labinter99_ita', labels[predi[0]])
-    for k in range(len(labels)):
-        topic_pub = "hiper/labinter_ita_"+labels[k]
-        # client.subscribe(topic_pub)
+    client.publish('hiper/labinter99_tess', labels[predi[0]])
+    for k in range(len(labels)):    
+        topic_pub = "hiper/labinter_tess_" + labels[k]
+        # client.subscribe(topic_pub)   
         client.publish(topic_pub, str(w_values[k]))
         
         # SEND TO MQTT BrOKER

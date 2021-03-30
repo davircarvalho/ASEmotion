@@ -20,7 +20,8 @@ import pickle
 # %% Define the INPUT dataset
 # dataset = 'DEMOS'
 # dataset = 'RAVDESS'
-dataset = 'TESS'
+# dataset = 'TESS'
+dataset = 'AEMOTION'
 
 # LOAD
 with open('../data/processed/dataset_smile_' +dataset+ '.pckl', 'rb') as f:
@@ -31,8 +32,8 @@ with open('../data/processed/dataset_smile_' +dataset+ '.pckl', 'rb') as f:
 def scale_dataset(x_in):
     scaler = MinMaxScaler()
     y_out = np.empty(shape=(np.shape(x_in)))
-    for k in range(np.shape(x_in)[0]):        
-        y_out[k,:,:] = scaler.fit_transform(x_in[k,:,:])
+    for k in range(np.shape(x_in)[2]):        
+        y_out[:,:,k] = scaler.fit_transform(x_in[:,:,k])
     return y_out
 
 x = scale_dataset(X)
@@ -41,9 +42,9 @@ x = x.astype('float32')
 
 # %% Load saved model 
 # Define the MODEL dataset
-dataset = 'DEMOS'
+# dataset = 'DEMOS'
 # dataset = 'RAVDESS'
-# dataset = 'TESS'
+dataset = 'TESS'
 # dataset = 'RAVDESS_TESS'
 
 # load model from file
@@ -57,7 +58,7 @@ tcn_full_summary(model, expand_residual_blocks=False)
 
 
 # %% Prediction
-pred = model.predict(x)
+pred = model.predict(x, batch_size=1)
 predi = pred.argmax(axis=1)
 
 labels = ['Neutral', 'Happy', 'Sad', 'Anger', 'Fear', 'Disgust', 'Surprise']
@@ -74,4 +75,4 @@ plt.title('Confusion matrix')
 # Report
 print(classification_report(y_true, predi))
 
-# %%
+    # %%
