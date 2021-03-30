@@ -50,8 +50,8 @@ x_train, x_test, y_train, y_test = train_test_split(X,y,
 def scale_dataset(x_in):
     scaler = MinMaxScaler()
     y_out = np.empty(shape=(np.shape(x_in)))
-    for k in range(np.shape(x_in)[0]):        
-        y_out[k,:,:] = scaler.fit_transform(x_in[k,:,:])
+    for k in range(np.shape(x_in)[2]):        
+        y_out[:,:,k] = scaler.fit_transform(x_in[:,:,k])
     return y_out
 
 x_train = scale_dataset(x_train)
