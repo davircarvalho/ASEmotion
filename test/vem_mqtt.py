@@ -27,8 +27,8 @@ def on_connect( client, userdata, flags, rc):
           'hiper/labinter03',
           'hiper/labinter04',
           'hiper/labinter05',
-          'hiper/labinter06']
-        #   'hiper/labinter99',]
+          'hiper/labinter06',
+          'hiper/labinter99',]
     for k in range(len(topics)):
         client.subscribe(topics[k])
 

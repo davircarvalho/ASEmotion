@@ -1,0 +1,15 @@
+conda create -y --name asemotion python=3.7.9
+conda activate asemotion
+
+conda install -c anaconda pyaudio
+conda install -c anaconda numpy
+conda install -c anaconda scikit-learn
+conda install -c groakat sox -y
+
+pip install keract
+pip install tensorflow==2.3.0
+pip install opensmile
+pip install paho-mqt
+pip install tensorflow-addons==0.12.1
+
+pip install -e .

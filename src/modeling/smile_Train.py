@@ -14,7 +14,7 @@ from src.modeling.tcn.tcn import TCN, compiled_tcn
 import pickle
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
@@ -23,11 +23,10 @@ import seaborn as sb
 from tensorflow.keras.callbacks import EarlyStopping
 
 # %% Define the dataset
-# dataset = 'DEMOS'
-dataset = 'RAVDESS'
+dataset = 'DEMOS'
+# dataset = 'RAVDESS'
 # dataset = 'TESS'
-# dataset = 'RAVDESS_TESS'
-
+# dataset = 'AEMOTION'
 
 
 # %% Load dataset 
@@ -43,17 +42,28 @@ x_train, x_test, y_train, y_test = train_test_split(X,y,
                                                     random_state=42,
                                                     stratify=y)
 
-
-# # Input normalization
-def scale_dataset(x_in):
-    scaler = MinMaxScaler()
+# % Input normalization
+def scale_dataset(x_in, fit_scaler=None):
+    # Initialize variables
     y_out = np.empty(shape=(np.shape(x_in)))
-    for k in range(np.shape(x_in)[2]):        
-        y_out[:,:,k] = scaler.fit_transform(x_in[:,:,k])
-    return y_out
+    save_scaler = []
+    # Normalization
+    for k in range(np.shape(x_in)[2]): # per feature 
+        ### Apply normalization
+        if fit_scaler is None: # calculate minmax normalization for training data
+            scaler = StandardScaler()
+            scaler = scaler.fit(x_in[:,:,k])
+            save_scaler.append(scaler)
+        else: # use the input scaler for the testing data
+            scaler = fit_scaler[k]
+        y_out[:,:,k] = scaler.transform(x_in[:,:,k])
+    return y_out, save_scaler
 
-x_train = scale_dataset(x_train)
-x_test = scale_dataset(x_test)
+x_train, fit_scaler = scale_dataset(x_train)
+x_test = scale_dataset(x_test, fit_scaler)[0]
+
+with open('../../model/input_preprocess_' +dataset+ '.pckl', 'wb') as f:
+    pickle.dump(fit_scaler, f) 
 
 x_train = x_train.astype('float32')
 x_test = x_test.astype('float32')
@@ -63,11 +73,11 @@ x_test = x_test.astype('float32')
 model = compiled_tcn(return_sequences=False,
                     num_feat=x_train.shape[2],
                     num_classes=len(np.unique(y_train)),
-                    nb_filters=128,
-                    kernel_size=5,
-                    dilations=[2 ** i for i in range(6)], 
+                    nb_filters=64,
+                    kernel_size=8,
+                    dilations=[2 ** i for i in range(10)], 
                     nb_stacks=1,
-                    dropout_rate=0.2,
+                    dropout_rate=0.25,
                     use_weight_norm=True,
                     max_len=x_train[0:1].shape[1],
                     use_skip_connections=True,
@@ -109,7 +119,7 @@ plt.xlabel('epoch')
 plt.legend(['Train', 'Test'], loc='upper right')
 plt.grid()
 plt.show()
-h.savefig('../../data/Loss' +dataset+ '.pdf', bbox_inches='tight')
+# h.savefig('../../data/Loss' +dataset+ '.pdf', bbox_inches='tight')
 
 
 h = plt.figure()
@@ -121,7 +131,7 @@ plt.xlabel('epoch')
 plt.legend(['Train', 'Test'], loc='lower right')
 plt.grid()
 plt.show()
-h.savefig('../../data/Accuracy' +dataset+ '.pdf', bbox_inches='tight')
+# h.savefig('../../data/Accuracy' +dataset+ '.pdf', bbox_inches='tight')
 
 
 

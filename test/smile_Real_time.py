@@ -34,10 +34,10 @@ def on_log(client, userdata, level, buf):
 
 broker_address="146.164.26.62"
 broker_port = 2494
-keepalive = 60
+keepalive = 90
 
 print("creating new instance")
-client = mqtt.Client("Labinter02") #create new instance
+client = mqtt.Client("Labinter700") #create new instance
 client.on_message=on_message #attach function to callback
 # client.on_log=on_log
 client.username_pw_set("participants", "prp1nterac")
@@ -49,10 +49,11 @@ client.loop_start() #start the loop
 
 # %% Define the trained model 
 # dataset = 'DEMOS'
-# dataset = 'RAVDESS'
-dataset = 'TESS'
+dataset = 'RAVDESS'
+# dataset = 'TESS'
 # dataset = 'RAVDESS_TESS'
 # dataset = 'AEMOTION'
+print("Loading model")
 
 # load model from file
 with open('../model/model_smile_' +dataset+ '.json', 'r') as json_file:
@@ -91,13 +92,12 @@ RATE = 16000 # Sample rate
 nn_time = 3 # signal length send to the network
 CHUNK = round(RATE*nn_time) # Frame size
 
-print('janela de análise é de: {0} segundos'.format(CHUNK/RATE))
 #input stream setup
 # pyaudio.paInt16 : representa resolução em 16bit 
 stream=p.open(format = pyaudio.paFloat32,
                        rate=RATE,
                        channels=1, 
-                       input_device_index = 1,
+                       input_device_index = 6,
                        input=True,  
                        frames_per_buffer=CHUNK)
 
@@ -116,13 +116,16 @@ while True:
     
     # GET ACTIVATIONS
     layername = 'activation' 
+    if dataset == 'DEMOS':
+        layername = 'activation_1'
+        
     l_weights = keract.get_activations(model, x_infer, layer_names=layername)
     w_values = np.squeeze(l_weights[layername])
     
     # SEND TO MQTT BrOKER
-    client.publish('hiper/labinter99_tess', labels[predi[0]])
+    client.publish('hiper/labinter99_', labels[predi[0]])
     for k in range(len(labels)):    
-        topic_pub = "hiper/labinter_tess_" + labels[k]
+        topic_pub = "hiper/labinter_" + labels[k]
         # client.subscribe(topic_pub)   
         client.publish(topic_pub, str(w_values[k]))
         
