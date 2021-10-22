@@ -9,7 +9,7 @@ conda install -c groakat sox -y
 pip install keract
 pip install tensorflow==2.3.0
 pip install opensmile
-pip install paho-mqt
+pip install paho-mqtt
 pip install tensorflow-addons==0.12.1
 
 pip install -e .
